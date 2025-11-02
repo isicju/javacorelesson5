@@ -1,71 +1,53 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Info</title>
     <style>
-        /* Simple grid style */
-        #userGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .userCard {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #f9f9f9;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { margin-bottom: 20px; }
+        .employee-field { margin-bottom: 10px; }
+        .label { font-weight: bold; margin-right: 5px; }
     </style>
-
-    <script>
-        console.log("script was loaded " + getFormattedTime());
-
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("DOM was loaded " + getFormattedTime());
-
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", window.location.origin + "/api/users/basic", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        console.log("API response: " + xhr.responseText);
-                        renderUsers(JSON.parse(xhr.responseText));
-                    } else {
-                        console.error("HTTP error " + xhr.status);
-                    }
-                }
-            };
-            xhr.send();
-        });
-
-        function renderUsers(users) {
-            const container = document.getElementById("userGrid");
-            users.forEach(user => {
-                const card = document.createElement("div");
-                card.className = "userCard";
-                card.innerHTML = `<strong>ID:</strong> ${user.id}<br><strong>Name:</strong> ${user.name}`;
-                container.appendChild(card);
-            });
-        }
-
-        function getFormattedTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, "0");
-            const minutes = String(now.getMinutes()).padStart(2, "0");
-            const seconds = String(now.getSeconds()).padStart(2, "0");
-            const milliseconds = String(now.getMilliseconds()).padStart(3, "0");
-            return `${hours}:${minutes}:${seconds}.${milliseconds}`;
-        }
-    </script>
 </head>
-
 <body>
-<h1>WORKS, RIGHT?</h1>
-<div>
-    <h2>YES IT SHOULD</h2>
-</div>
+<h1>Employee Info</h1>
+<div class="employee-field"><span class="label">Employee ID:</span><span id="employeeId"></span></div>
+<div class="employee-field"><span class="label">First Name:</span><span id="firstName"></span></div>
+<div class="employee-field"><span class="label">Last Name:</span><span id="lastName"></span></div>
+<div class="employee-field"><span class="label">Email:</span><span id="email"></span></div>
+<div class="employee-field"><span class="label">Phone Number:</span><span id="phoneNumber"></span></div>
+<div class="employee-field"><span class="label">Hire Date:</span><span id="hireDate"></span></div>
+<div class="employee-field"><span class="label">Job ID:</span><span id="jobId"></span></div>
+<div class="employee-field"><span class="label">Salary:</span><span id="salary"></span></div>
 
-<!-- Container for user grid -->
-<div id="userGrid"></div>
+<script>
+    const employeeId = 101;
+    // Use current origin dynamically
+    const url = `${window.location.origin}/employees/${employeeId}`;
+
+    async function loadEmployee() {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch employee data');
+            const employee = await response.json();
+
+            document.getElementById('employeeId').textContent = employee.employeeId;
+            document.getElementById('firstName').textContent = employee.firstName;
+            document.getElementById('lastName').textContent = employee.lastName;
+            document.getElementById('email').textContent = employee.email;
+            document.getElementById('phoneNumber').textContent = employee.phoneNumber;
+            document.getElementById('hireDate').textContent = new Date(employee.hireDate).toLocaleDateString();
+            document.getElementById('jobId').textContent = employee.jobId;
+            document.getElementById('salary').textContent = employee.salary.toFixed(2);
+        } catch (err) {
+            console.error(err);
+            alert('Error loading employee data');
+        }
+    }
+
+    loadEmployee();
+</script>
 </body>
 </html>
