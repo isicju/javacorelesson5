@@ -1,0 +1,71 @@
+<html>
+<head>
+    <style>
+        /* Simple grid style */
+        #userGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .userCard {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+    </style>
+
+    <script>
+        console.log("script was loaded " + getFormattedTime());
+
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM was loaded " + getFormattedTime());
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", window.location.origin + "/api/users/basic", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log("API response: " + xhr.responseText);
+                        renderUsers(JSON.parse(xhr.responseText));
+                    } else {
+                        console.error("HTTP error " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        });
+
+        function renderUsers(users) {
+            const container = document.getElementById("userGrid");
+            users.forEach(user => {
+                const card = document.createElement("div");
+                card.className = "userCard";
+                card.innerHTML = `<strong>ID:</strong> ${user.id}<br><strong>Name:</strong> ${user.name}`;
+                container.appendChild(card);
+            });
+        }
+
+        function getFormattedTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, "0");
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
+            const milliseconds = String(now.getMilliseconds()).padStart(3, "0");
+            return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }
+    </script>
+</head>
+
+<body>
+<h1>WORKS, RIGHT?</h1>
+<div>
+    <h2>YES IT SHOULD</h2>
+</div>
+
+<!-- Container for user grid -->
+<div id="userGrid"></div>
+</body>
+</html>
